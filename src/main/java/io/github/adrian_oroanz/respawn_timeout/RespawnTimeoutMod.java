@@ -90,16 +90,14 @@ public class RespawnTimeoutMod implements ModInitializer {
 
 			// Time elapsed since death should be greater than the defined timeout.
 			if (timeSinceDeath >= serverState.respawnTimeout) {
-				ServerWorld spawnWorld = server.getOverworld();
-				BlockPos spawnPos;
+				BlockPos spawnPos = playerEntity.getSpawnPointPosition();
+				ServerWorld spawnWorld = server.getWorld(playerEntity.getSpawnPointDimension());
 
 				// If the player has a valid spawn point it will use it, otherwise it will use world's spawn.
-				if (playerEntity.isSpawnPointSet()) {
-					spawnPos = playerEntity.getSpawnPointPosition();
-					spawnWorld = server.getWorld(playerEntity.getSpawnPointDimension());
-				}
-				else
+				if (spawnPos == null) {
 					spawnPos = server.getOverworld().getSpawnPos();
+					spawnWorld = server.getOverworld();
+				}
 
 				int x = spawnPos.getX();
 				int y = spawnPos.getY();
