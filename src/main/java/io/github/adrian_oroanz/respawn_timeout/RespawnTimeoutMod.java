@@ -7,6 +7,7 @@ import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.adrian_oroanz.respawn_timeout.commands.ClearCommand;
 import io.github.adrian_oroanz.respawn_timeout.commands.GetCommand;
 import io.github.adrian_oroanz.respawn_timeout.commands.RespawnCommand;
 import io.github.adrian_oroanz.respawn_timeout.commands.SetCommand;
@@ -37,6 +38,7 @@ public class RespawnTimeoutMod implements ModInitializer {
 				
 			GetCommand.register(dispatcher);
 			SetCommand.register(dispatcher);
+			ClearCommand.register(dispatcher);
 			RespawnCommand.register(dispatcher);
 		});
 
