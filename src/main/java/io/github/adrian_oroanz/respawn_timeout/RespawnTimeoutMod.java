@@ -1,7 +1,7 @@
 package io.github.adrian_oroanz.respawn_timeout;
 
 import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.base.api.entrypoint.server.DedicatedServerModInitializer;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
@@ -23,13 +23,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 
-public class RespawnTimeoutMod implements ModInitializer {
+public class RespawnTimeoutMod implements DedicatedServerModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Respawn Timeout");
 
 
 	@Override
-	public void onInitialize (ModContainer mod) {
+	public void onInitializeServer (ModContainer mod) {
+		LOGGER.info("Mod initialized.");
 
 		// Registers the commands for the mod.
 		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> {
@@ -87,37 +88,40 @@ public class RespawnTimeoutMod implements ModInitializer {
 		PlayerState playerState = ServerState.getPlayerState(playerEntity);
 
 		// The player must be on spectator mode (timed out) and have a registered death time.
-		if (playerEntity.isSpectator() && (playerState.deathTimestamp != 0)) {
-			long timeSinceDeath = (System.currentTimeMillis() - playerState.deathTimestamp) / 1000;
+		if (!(playerEntity.isSpectator()) || (playerState.deathTimestamp == 0))
+			return;
+		
+		long timeSinceDeath = (System.currentTimeMillis() - playerState.deathTimestamp) / 1000;
 
-			// Time elapsed since death should be greater than the defined timeout.
-			if (timeSinceDeath >= serverState.respawnTimeout) {
-				BlockPos spawnPos = playerEntity.getSpawnPointPosition();
-				ServerWorld spawnWorld = server.getWorld(playerEntity.getSpawnPointDimension());
+		// Time elapsed since death should be greater or equal than the defined timeout.
+		if (timeSinceDeath < serverState.respawnTimeout) {
+			playerEntity.sendMessage(Text.of("You are on timeout! You have to wait " + (serverState.respawnTimeout - timeSinceDeath) + " seconds before respawning!"), false);
 
-				// If the player has a valid spawn point it will use it, otherwise it will use world's spawn.
-				if (spawnPos == null) {
-					spawnPos = server.getOverworld().getSpawnPos();
-					spawnWorld = server.getOverworld();
-				}
-
-				int x = spawnPos.getX();
-				int y = spawnPos.getY();
-				int z = spawnPos.getZ();
-
-				playerEntity.teleport(spawnWorld, x, y, z, playerEntity.getYaw(), playerEntity.getPitch());
-				playerEntity.changeGameMode(GameMode.SURVIVAL);
-
-				// Reset the timeout status.
-				playerState.deathTimestamp = 0;
-				serverState.players.put(playerEntity.getUuid(), playerState);
-				serverState.markDirty();
-
-				playerEntity.sendMessage(Text.of("You have respawned!"), false);
-			}
-			else 
-				playerEntity.sendMessage(Text.of("You are on timeout! You have to wait " + (serverState.respawnTimeout - timeSinceDeath) + " seconds before respawning!"), false);
+			return;
 		}
+
+		BlockPos spawnPos = playerEntity.getSpawnPointPosition();
+		ServerWorld spawnWorld = server.getWorld(playerEntity.getSpawnPointDimension());
+
+		// If the player has a valid spawn point it will use it, otherwise it will use world's spawn.
+		if (spawnPos == null) {
+			spawnPos = server.getOverworld().getSpawnPos();
+			spawnWorld = server.getOverworld();
+		}
+
+		int x = spawnPos.getX();
+		int y = spawnPos.getY();
+		int z = spawnPos.getZ();
+
+		playerEntity.teleport(spawnWorld, x, y, z, playerEntity.getYaw(), playerEntity.getPitch());
+		playerEntity.changeGameMode(GameMode.SURVIVAL);
+
+		// Reset the timeout status.
+		playerState.deathTimestamp = 0;
+		serverState.players.put(playerEntity.getUuid(), playerState);
+		serverState.markDirty();
+
+		playerEntity.sendMessage(Text.of("You have respawned!"), false);
 	}
 	
 }
