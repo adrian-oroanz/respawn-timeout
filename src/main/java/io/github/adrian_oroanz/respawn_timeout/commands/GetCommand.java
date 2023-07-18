@@ -23,7 +23,7 @@ public final class GetCommand {
 	public static int get (ServerCommandSource source) {
 		ServerState serverState = ServerState.getServerState(source.getServer());
 
-		source.sendFeedback(() -> Text.literal("Respawn timeout is " + serverState.respawnTimeout + " seconds"), false);
+		source.sendFeedback(() -> Text.translatable("cmd.respawn-timeout.get.res", serverState.respawnTimeout), false);
 
 		return Command.SINGLE_SUCCESS;
 	}

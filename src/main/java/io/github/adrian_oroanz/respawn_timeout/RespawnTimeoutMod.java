@@ -95,7 +95,7 @@ public class RespawnTimeoutMod implements DedicatedServerModInitializer {
 
 		// Time elapsed since death should be greater or equal than the defined timeout.
 		if (timeSinceDeath < serverState.respawnTimeout) {
-			playerEntity.sendMessage(Text.of("You are on timeout! You have to wait " + (serverState.respawnTimeout - timeSinceDeath) + " seconds before respawning!"), false);
+			playerEntity.sendMessage(Text.translatable("txt.respawn-timeout.player_status", (serverState.respawnTimeout - timeSinceDeath)), false);
 
 			return;
 		}
@@ -121,7 +121,7 @@ public class RespawnTimeoutMod implements DedicatedServerModInitializer {
 		serverState.players.put(playerEntity.getUuid(), playerState);
 		serverState.markDirty();
 
-		playerEntity.sendMessage(Text.of("You have respawned!"), false);
+		playerEntity.sendMessage(Text.translatable("txt.respawn-timeout.player_respawn"), false);
 	}
 	
 }

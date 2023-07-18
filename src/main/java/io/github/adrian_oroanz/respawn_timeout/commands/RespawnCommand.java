@@ -27,7 +27,7 @@ public final class RespawnCommand {
 		PlayerState playerState = ServerState.getPlayerState(playerEntity);
 
 		if (playerState.deathTimestamp == 0) {
-			source.sendFeedback(() -> Text.literal("You are not on timeout!"), false);
+			source.sendFeedback(() -> Text.translatable("txt.respawn-timeout.player_na"), false);
 
 			return 1;
 		}

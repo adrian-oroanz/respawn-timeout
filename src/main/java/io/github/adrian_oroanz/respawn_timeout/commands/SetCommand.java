@@ -29,14 +29,14 @@ public final class SetCommand {
 
 	public static int set (ServerCommandSource source, long timeout) throws CommandSyntaxException {
 		if (timeout < 0)
-			throw new SimpleCommandExceptionType(Text.literal("Timeout must be a positive number!")).create();
+			throw new SimpleCommandExceptionType(Text.translatable("cmd.respawn-timeout.set.err")).create();
 
 		ServerState serverState = ServerState.getServerState(source.getServer());
 
 		serverState.respawnTimeout = timeout;
 		serverState.markDirty();
 
-		source.sendFeedback(() -> Text.literal("Respawn timeout set to " + timeout + " seconds"), true);
+		source.sendFeedback(() -> Text.translatable("cmd.respawn-timeout.set.res", timeout), true);
 
 		return Command.SINGLE_SUCCESS;
 	}

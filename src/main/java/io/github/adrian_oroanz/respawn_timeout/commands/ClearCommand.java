@@ -26,7 +26,7 @@ public final class ClearCommand {
 		serverState.respawnTimeout = 0;
 		serverState.markDirty();
 
-		source.sendFeedback(() -> Text.literal("Respawn timeout has been reset!"), false);
+		source.sendFeedback(() -> Text.translatable("cmd.respawn-timeout.clear.res"), false);
 
 		return Command.SINGLE_SUCCESS;
 	}
