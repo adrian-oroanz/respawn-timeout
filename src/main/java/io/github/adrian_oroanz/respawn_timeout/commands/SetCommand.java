@@ -2,6 +2,8 @@ package io.github.adrian_oroanz.respawn_timeout.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import io.github.adrian_oroanz.respawn_timeout.state.ServerState;
 import net.minecraft.server.command.ServerCommandSource;
@@ -25,7 +27,10 @@ public final class SetCommand {
 			));
 	}
 
-	public static int set (ServerCommandSource source, long timeout) {
+	public static int set (ServerCommandSource source, long timeout) throws CommandSyntaxException {
+		if (timeout < 0)
+			throw new SimpleCommandExceptionType(Text.literal("Timeout must be a positive number!")).create();
+
 		ServerState serverState = ServerState.getServerState(source.getServer());
 
 		serverState.respawnTimeout = timeout;
