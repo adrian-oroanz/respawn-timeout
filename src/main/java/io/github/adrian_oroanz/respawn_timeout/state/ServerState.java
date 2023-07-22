@@ -2,6 +2,7 @@ package io.github.adrian_oroanz.respawn_timeout.state;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -14,6 +15,7 @@ import net.minecraft.world.World;
 public class ServerState extends PersistentState {
 
 	public long respawnTimeout = 0;
+	public TimeUnit timeUnit = TimeUnit.SECONDS;
 	public HashMap<UUID, PlayerState> players = new HashMap<>();
 
 
@@ -31,10 +33,10 @@ public class ServerState extends PersistentState {
 
 		nbt.put("players", playersNbtCompound);
 		nbt.putLong("respawnTimeout", respawnTimeout);
+		nbt.putString("timeUnit", timeUnit.toString());
 
 		return nbt;
 	}
-
 
 	public static ServerState createFromNbt (NbtCompound tag) {
 		ServerState serverState = new ServerState();
@@ -52,9 +54,17 @@ public class ServerState extends PersistentState {
 
 		serverState.respawnTimeout = tag.getLong("respawnTimeout");
 
+		try {
+			serverState.timeUnit = TimeUnit.valueOf(tag.getString("timeUnit"));
+		}
+		catch (Exception e) {
+			serverState.timeUnit = TimeUnit.SECONDS;
+		}
+
 		return serverState;
 	}
 
+	
 	public static ServerState getServerState (MinecraftServer server) {
 		PersistentStateManager persistentStateManager = server.getWorld(World.OVERWORLD).getPersistentStateManager();
 

@@ -8,6 +8,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.server.command.CommandManager.ADMIN_PERMISSION_LEVEL;;
 
 
 public final class ClearCommand {
@@ -15,7 +16,7 @@ public final class ClearCommand {
 	public static void register (CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(literal("respawntimeout")
 			.then(literal("clear")
-				.requires((source) -> source.hasPermissionLevel(4))
+				.requires((source) -> source.hasPermissionLevel(ADMIN_PERMISSION_LEVEL))
 				.executes((context) -> clear(context.getSource()))
 			));
 	}

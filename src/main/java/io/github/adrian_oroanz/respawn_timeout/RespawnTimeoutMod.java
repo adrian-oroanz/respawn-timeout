@@ -1,7 +1,7 @@
 package io.github.adrian_oroanz.respawn_timeout;
 
 import org.quiltmc.loader.api.ModContainer;
-import org.quiltmc.qsl.base.api.entrypoint.server.DedicatedServerModInitializer;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
 import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import io.github.adrian_oroanz.respawn_timeout.commands.RespawnCommand;
 import io.github.adrian_oroanz.respawn_timeout.commands.SetCommand;
 import io.github.adrian_oroanz.respawn_timeout.state.PlayerState;
 import io.github.adrian_oroanz.respawn_timeout.state.ServerState;
+import io.github.adrian_oroanz.respawn_timeout.util.TimeUtils;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.server.MinecraftServer;
@@ -23,14 +24,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 
-public class RespawnTimeoutMod implements DedicatedServerModInitializer {
+public class RespawnTimeoutMod implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Respawn Timeout");
 
 
 	@Override
-	public void onInitializeServer (ModContainer mod) {
-		LOGGER.info("Mod initialized.");
+	public void onInitialize (ModContainer mod) {
+		LOGGER.info("[Respawn Timeout] Counting seconds...");
 
 		// Registers the commands for the mod.
 		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> {
@@ -79,7 +80,7 @@ public class RespawnTimeoutMod implements DedicatedServerModInitializer {
 
 
 	/**
-	 * Respawns the player if the timeout is over.
+	 * Attempts to revive the player if the timeout is over.
 	 * @param playerEntity The player to verify their timeout status.
 	 */
 	public static void tryRespawnPlayer (ServerPlayerEntity playerEntity) {
@@ -91,11 +92,14 @@ public class RespawnTimeoutMod implements DedicatedServerModInitializer {
 		if (!(playerEntity.isSpectator()) || (playerState.deathTimestamp == 0))
 			return;
 		
-		long timeSinceDeath = (System.currentTimeMillis() - playerState.deathTimestamp) / 1000;
+		long respawnTimeoutInSeconds = serverState.timeUnit.toSeconds(serverState.respawnTimeout);
+		long timeSinceDeathInSeconds = (System.currentTimeMillis() - playerState.deathTimestamp) / 1000;
 
 		// Time elapsed since death should be greater or equal than the defined timeout.
-		if (timeSinceDeath < serverState.respawnTimeout) {
-			playerEntity.sendMessage(Text.translatable("txt.respawn-timeout.player_status", (serverState.respawnTimeout - timeSinceDeath)), false);
+		if (timeSinceDeathInSeconds < respawnTimeoutInSeconds) {
+			String remainingTime = TimeUtils.secondsToHHmmss((int)(respawnTimeoutInSeconds - timeSinceDeathInSeconds));
+
+			playerEntity.sendMessage(Text.translatable("txt.respawn-timeout.player_status", remainingTime), false);
 
 			return;
 		}

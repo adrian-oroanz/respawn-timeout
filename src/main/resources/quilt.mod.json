@@ -19,7 +19,7 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"server_init": "io.github.adrian_oroanz.respawn_timeout.RespawnTimeoutMod"
+			"init": "io.github.adrian_oroanz.respawn_timeout.RespawnTimeoutMod"
 		},
 		"depends": [
 			{
