@@ -1,5 +1,8 @@
 package io.github.adrian_oroanz.respawn_timeout;
 
+import java.util.function.Predicate;
+
+import org.jetbrains.annotations.Nullable;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.command.api.CommandRegistrationCallback;
@@ -13,7 +16,7 @@ import io.github.adrian_oroanz.respawn_timeout.commands.RespawnCommand;
 import io.github.adrian_oroanz.respawn_timeout.commands.SetCommand;
 import io.github.adrian_oroanz.respawn_timeout.state.PlayerState;
 import io.github.adrian_oroanz.respawn_timeout.state.ServerState;
-import io.github.adrian_oroanz.respawn_timeout.util.TimeUtils;
+import io.github.adrian_oroanz.respawn_timeout.util.RespawnConditions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.minecraft.server.MinecraftServer;
@@ -46,7 +49,7 @@ public class RespawnTimeoutMod implements ModInitializer {
 
 		// Checks and tries to respawn the player in case they had been timed out.
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			tryRespawnPlayer(handler.player);
+			respawnPlayer(handler.getPlayer(), RespawnConditions::base);
 		});
 
 		// Changes the player's game mode to spectator when they die and saves the timestamp of their death.
@@ -74,40 +77,27 @@ public class RespawnTimeoutMod implements ModInitializer {
 			if ((playerState.deathTimestamp == 0) || !(newPlayer.isSpectator()))
 				return;
 
-			tryRespawnPlayer(newPlayer);
+			respawnPlayer(newPlayer, RespawnConditions::base);
 		});
 	}
 
 
 	/**
-	 * Attempts to revive the player if the timeout is over.
-	 * @param playerEntity The player to verify their timeout status.
+	 * Respawns the player if the condition is met. If the condition is null, the player is respawned regardless of the remaining timeout.
+	 * @param playerEntity The player to respawn.
+	 * @param condition The condition to check before respawning the player.
 	 */
-	public static void tryRespawnPlayer (ServerPlayerEntity playerEntity) {
+	public static void respawnPlayer (ServerPlayerEntity playerEntity, @Nullable Predicate<ServerPlayerEntity> condition) {
+		if ((condition != null) && !condition.test(playerEntity))
+			return;
+
 		MinecraftServer server = playerEntity.server;
+		ServerWorld spawnWorld = server.getWorld(playerEntity.getSpawnPointDimension());
 		ServerState serverState = ServerState.getServerState(server);
 		PlayerState playerState = ServerState.getPlayerState(playerEntity);
-
-		// The player must be on spectator mode (timed out) and have a registered death time.
-		if (!(playerEntity.isSpectator()) || (playerState.deathTimestamp == 0))
-			return;
-		
-		long respawnTimeoutInSeconds = serverState.timeUnit.toSeconds(serverState.respawnTimeout);
-		long timeSinceDeathInSeconds = (System.currentTimeMillis() - playerState.deathTimestamp) / 1000;
-
-		// Time elapsed since death should be greater or equal than the defined timeout.
-		if (timeSinceDeathInSeconds < respawnTimeoutInSeconds) {
-			String remainingTime = TimeUtils.secondsToHHmmss((int)(respawnTimeoutInSeconds - timeSinceDeathInSeconds));
-
-			playerEntity.sendMessage(Text.translatable("txt.respawn-timeout.player_status", remainingTime), false);
-
-			return;
-		}
-
 		BlockPos spawnPos = playerEntity.getSpawnPointPosition();
-		ServerWorld spawnWorld = server.getWorld(playerEntity.getSpawnPointDimension());
 
-		// If the player has a valid spawn point it will use it, otherwise it will use world's spawn.
+		// Use the player's spawn point if it's valid, otherwise use world's spawn.
 		if (spawnPos == null) {
 			spawnPos = server.getOverworld().getSpawnPos();
 			spawnWorld = server.getOverworld();
