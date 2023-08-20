@@ -13,15 +13,15 @@ import static com.mojang.brigadier.arguments.LongArgumentType.longArg;
 import static com.mojang.brigadier.arguments.LongArgumentType.getLong;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.server.command.CommandManager.ADMIN_PERMISSION_LEVEL;
 
 import java.util.concurrent.TimeUnit;
-
-import static net.minecraft.server.command.CommandManager.ADMIN_PERMISSION_LEVEL;
 
 
 public final class SetCommand {
 	
 	public static void register (CommandDispatcher<ServerCommandSource> dispatcher) {
+		// Seconds.
 		dispatcher.register(literal("respawntimeout")
 			.then(literal("set")
 				.requires((source) -> source.hasPermissionLevel(ADMIN_PERMISSION_LEVEL))
@@ -30,26 +30,29 @@ public final class SetCommand {
 						.executes((context) -> set(context.getSource(), getLong(context, "timeout"), TimeUnit.SECONDS))
 					))));
 
+		// Minutes.
 		dispatcher.register(literal("respawntimeout")
 			.then(literal("set")
 				.requires((source) -> source.hasPermissionLevel(ADMIN_PERMISSION_LEVEL))
-				.then(argument("timeout", longArg(0, 604800))
+				.then(argument("timeout", longArg(0, 10080))
 					.then(literal("minutes")
 						.executes((context) -> set(context.getSource(), getLong(context, "timeout"), TimeUnit.MINUTES))
 					))));
 
+		// Hours.
 		dispatcher.register(literal("respawntimeout")
 			.then(literal("set")
 				.requires((source) -> source.hasPermissionLevel(ADMIN_PERMISSION_LEVEL))
-				.then(argument("timeout", longArg(0, 604800))
+				.then(argument("timeout", longArg(0, 168))
 					.then(literal("hours")
 						.executes((context) -> set(context.getSource(), getLong(context, "timeout"), TimeUnit.HOURS))
 					))));
 
+		// Days.
 		dispatcher.register(literal("respawntimeout")
 			.then(literal("set")
 				.requires((source) -> source.hasPermissionLevel(ADMIN_PERMISSION_LEVEL))
-				.then(argument("timeout", longArg(0, 604800))
+				.then(argument("timeout", longArg(0, 7))
 					.then(literal("days")
 						.executes((context) -> set(context.getSource(), getLong(context, "timeout"), TimeUnit.DAYS))
 					))));
