@@ -2,20 +2,18 @@
 	"schema_version": 1,
 	"quilt_loader": {
 		"group": "io.github.adrian_oroanz",
-		"id": "respawn-timeout",
+		"id": "respawn_timeout",
 		"version": "${version}",
 		"metadata": {
 			"name": "Respawn Timeout",
-			"description": "Prevents immediate player respawn by timing them out after dying.",
+			"description": "Prevent players from instantly respawning by setting a configurable timeout upon death.",
 			"contributors": {
 				"adrian-oroanz": "Owner"
 			},
 			"contact": {
-				"homepage": "https://adrian_oroanz.github.io/",
 				"issues": "https://github.com/adrian-oroanz/respawn-timeout/issues",
 				"sources": "https://github.com/adrian-oroanz/respawn-timeout"
-			},
-			"icon": "assets/example_mod/icon.png"
+			}
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
