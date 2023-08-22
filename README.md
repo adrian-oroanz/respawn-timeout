@@ -28,18 +28,17 @@ _NOTE: To avoid running an unnecessarily amount of checks every game tick, the m
 
 ### Feedback and Bug Reporting
 
-To streamline this process, check that your request or problem hasn't already been reported and is active. Otherwise, feel free to open a new Issue over on the **[Issues]((https://github.com/adrian-oroanz/respawn-timeout/issues))** page.
+To streamline this process, check that your request or problem hasn't already been reported and is active. Otherwise, feel free to open a new Issue over on the **Issues** page.
 
 If you want to contribute directly to the mod instead, check the following sections.
 
 ### Getting Started
 
-1. Clone the repository.
-2. Select the branch in which to commit your changes.
-3. Commit your changes and push to the branch.
-4. Create a new Pull Request.
-
-I believe the code is pretty straightforward and simple to understand, it really isn't anything too complex or groundbreaking and should be easy to contribute any features.
+1. Fork the repository.
+2. Create a new branch for your changes: `git checkout -b feature/YourFeature`.
+3. Commit your changes: `git commit -am 'Add some feature'`.
+4. Push to the branch: `git push origin feature/YourFeature`.
+5. Create a new Pull Request.
 
 If you have any doubts as to how something works feel free to contact me.
 
@@ -47,7 +46,7 @@ If you have any doubts as to how something works feel free to contact me.
 
 The most simple, but still helpful, way of contributing is via language translations. The mod only gets official support for 2 languages: English and Spanish, any other language is welcome.
 
-To contribute, simply open a new PR with the added language file and titled after the language to include.
+To contribute, follow the steps on the [Getting Started](#getting-started) section, naming the branch with the language code to add. Add the corresponding language file with the translations, commit the changes, push to the branch and create a new PR.
 
 ## License
 
