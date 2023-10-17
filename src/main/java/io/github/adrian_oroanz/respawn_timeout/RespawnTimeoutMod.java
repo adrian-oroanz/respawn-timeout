@@ -40,7 +40,7 @@ public class RespawnTimeoutMod implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> {
 			if (!environment.isDedicated())
 				return;
-				
+
 			GetCommand.register(dispatcher);
 			SetCommand.register(dispatcher);
 			ClearCommand.register(dispatcher);
@@ -54,10 +54,8 @@ public class RespawnTimeoutMod implements ModInitializer {
 
 		// Changes the player's game mode to spectator when they die and saves the timestamp of their death.
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-			if (!(entity instanceof ServerPlayerEntity))
+			if (!(entity instanceof ServerPlayerEntity playerEntity))
 				return;
-
-			ServerPlayerEntity playerEntity = (ServerPlayerEntity) entity;
 
 			ServerState serverState = ServerState.getServerState(playerEntity.getServer());
 			PlayerState playerState = ServerState.getPlayerState(playerEntity);
@@ -117,5 +115,5 @@ public class RespawnTimeoutMod implements ModInitializer {
 
 		playerEntity.sendMessage(Text.translatable("txt.respawn-timeout.player_respawn"), false);
 	}
-	
+
 }
