@@ -18,7 +18,7 @@ import static net.minecraft.server.command.CommandManager.MODERATOR_PERMISSION_L
 
 
 public final class RespawnCommand {
-	
+
 	public static void register (CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(literal("respawntimeout")
 			.then(literal("respawn")
@@ -38,9 +38,11 @@ public final class RespawnCommand {
 
 		// No death timestamp means the player is not timed out.
 		if (playerState.deathTimestamp == 0) {
-			String translationKey = (playerEntity == source.getPlayer()) ? "txt.respawn-timeout.player_na" : "txt.respawn-timeout.player_ext_na";
+			String translationKey = (playerEntity == source.getPlayer())
+				? "txt.respawn-timeout.player_na"
+				: "txt.respawn-timeout.player_ext_na";
 
-			source.sendFeedback(() -> Text.translatable(translationKey, playerEntity.getName().getString()), false);
+			source.sendFeedback(Text.translatable(translationKey, playerEntity.getName().getString()), false);
 
 			return Command.SINGLE_SUCCESS;
 		}
@@ -49,7 +51,7 @@ public final class RespawnCommand {
 		if (forceRespawn) {
 			respawnPlayer(playerEntity, null);
 
-			source.sendFeedback(() -> Text.translatable("txt.respawn-timeout.player_ext_respawn", playerEntity.getName().getString()), false);
+			source.sendFeedback(Text.translatable("txt.respawn-timeout.player_ext_respawn", playerEntity.getName().getString()), false);
 
 			return Command.SINGLE_SUCCESS;
 		}
@@ -58,5 +60,5 @@ public final class RespawnCommand {
 
 		return Command.SINGLE_SUCCESS;
 	}
-	
+
 }

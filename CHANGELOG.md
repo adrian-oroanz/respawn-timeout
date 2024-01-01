@@ -22,3 +22,7 @@
 - Updated the `/respawntimeout respawn` command, allowing moderator level users to force-respawn a player.
 ### Fixes
 - Fixed the `/respawntimeout set` command not limiting the right amount of timeout per time unit.
+
+## [0.3.0](#030)
+### Additions
+- Added 1.19.4 support.

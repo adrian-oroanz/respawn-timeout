@@ -34,7 +34,7 @@ public class RespawnTimeoutMod implements ModInitializer {
 
 	@Override
 	public void onInitialize (ModContainer mod) {
-		LOGGER.info("[Respawn Timeout] Counting seconds...");
+		LOGGER.info("[Respawn Timeout] Initializing...");
 
 		// Registers the commands for the mod.
 		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> {
@@ -57,7 +57,12 @@ public class RespawnTimeoutMod implements ModInitializer {
 			if (!(entity instanceof ServerPlayerEntity playerEntity))
 				return;
 
-			ServerState serverState = ServerState.getServerState(playerEntity.getServer());
+			MinecraftServer server = playerEntity.getServer();
+
+			if (server == null)
+				return;
+
+			ServerState serverState = ServerState.getServerState(server);
 			PlayerState playerState = ServerState.getPlayerState(playerEntity);
 
 			// Set the timeout as persistent data.
@@ -77,6 +82,8 @@ public class RespawnTimeoutMod implements ModInitializer {
 
 			respawnPlayer(newPlayer, RespawnConditions::base);
 		});
+
+		LOGGER.info("[Respawn Timeout] Initialized!");
 	}
 
 

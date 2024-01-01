@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public final class SetCommand {
-	
+
 	public static void register (CommandDispatcher<ServerCommandSource> dispatcher) {
 		// Seconds.
 		dispatcher.register(literal("respawntimeout")
@@ -68,7 +68,14 @@ public final class SetCommand {
 		serverState.timeUnit = timeUnit;
 		serverState.markDirty();
 
-		source.sendFeedback(() -> Text.translatable("cmd.respawn-timeout.set.res", timeout, timeUnit.toString().toLowerCase().charAt(0)), true);
+		source.sendFeedback(
+			Text.translatable(
+				"cmd.respawn-timeout.set.res",
+				timeout,
+				timeUnit.toString().toLowerCase().charAt(0)
+			),
+			true
+		);
 
 		return Command.SINGLE_SUCCESS;
 	}

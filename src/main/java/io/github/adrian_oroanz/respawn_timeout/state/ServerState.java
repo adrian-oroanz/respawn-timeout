@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
@@ -64,24 +65,31 @@ public class ServerState extends PersistentState {
 		return serverState;
 	}
 
-	
-	public static ServerState getServerState (MinecraftServer server) {
-		PersistentStateManager persistentStateManager = server.getWorld(World.OVERWORLD).getPersistentStateManager();
 
-		ServerState serverState = persistentStateManager.getOrCreate(
+	public static ServerState getServerState (MinecraftServer server) {
+		ServerWorld overworld = server.getWorld(World.OVERWORLD);
+
+		if (overworld == null)
+			throw new NullPointerException("Overworld is null");
+
+		PersistentStateManager persistentStateManager = overworld.getPersistentStateManager();
+
+		return persistentStateManager.getOrCreate(
 			ServerState::createFromNbt,
 			ServerState::new,
 			"respawn_timeout"
 		);
-
-		return serverState;
 	}
 
 	public static PlayerState getPlayerState (LivingEntity playerEntity) {
-		ServerState serverState = getServerState(playerEntity.getWorld().getServer());
-		PlayerState playerState = serverState.players.computeIfAbsent(playerEntity.getUuid(), (uuid) -> new PlayerState());
+		MinecraftServer server = playerEntity.getServer();
 
-		return playerState;
+		if (server == null)
+			throw new NullPointerException("Server is null");
+
+		ServerState serverState = getServerState(server);
+
+        return serverState.players.computeIfAbsent(playerEntity.getUuid(), (uuid) -> new PlayerState());
 	}
-	
+
 }

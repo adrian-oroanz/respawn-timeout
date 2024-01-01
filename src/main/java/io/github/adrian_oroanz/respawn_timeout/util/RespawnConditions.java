@@ -11,7 +11,7 @@ import net.minecraft.text.Text;
  * Contains all the possible respawn conditions that can be used to check if a player can respawn.
  */
 public final class RespawnConditions {
-	
+
 	/**
 	 * Represents the base respawn condition. A player can respawn if they are on spectator mode and have a registered death time.
 	 * @param playerEntity The player to check.
@@ -19,6 +19,10 @@ public final class RespawnConditions {
 	 */
 	public static boolean base (ServerPlayerEntity playerEntity) {
 		MinecraftServer server = playerEntity.getServer();
+
+		if (server == null)
+			return false;
+
 		ServerState serverState = ServerState.getServerState(server);
 		PlayerState playerState = ServerState.getPlayerState(playerEntity);
 
